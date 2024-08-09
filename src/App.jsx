@@ -27,30 +27,18 @@ function App() {
   }
 
   function handleAddProject(projectData) {
-    setProjectsState((prevState) => {
+    setProjectsState((prevProjects) => {
       const projectId = Math.random();
       const newProject = {
         ...projectData,
         id: projectId,
       };
       return {
-        ...prevState,
+        ...prevProjects,
         selectedProjectId: undefined,
-        projects: [...prevState.projects, newProject],
+        projects: [...prevProjects.projects, newProject],
       };
     });
-  }
-  console.log(projectsState);
-  const selectedProject = projectsState.projects.find(
-    (project) => project.id === projectsState.selectedProjectId
-  );
-  let content = <SelectedProject project={selectedProject} />;
-  if (projectsState.selectedProjectId === null) {
-    content = (
-      <NewProject onAdd={handleAddProject} onCancel={handleCancelAddProject} />
-    );
-  } else if (projectsState.selectedProjectId === undefined) {
-    content = <NoProjectSelected onStartAddProject={handleStartAddProject} />;
   }
   function handleCancelAddProject() {
     setProjectsState((prevProjects) => {
@@ -60,6 +48,35 @@ function App() {
       };
     });
   }
+
+  function handleDeleteProject() {
+    setProjectsState((prevProjects) => {
+      return {
+        ...prevProjects,
+        selectedProjectId: undefined,
+        projects: prevProjects.projects.filter(
+          (project) => project.id !== prevProjects.selectedProjectId
+        ),
+      };
+    });
+  }
+
+  console.log(projectsState);
+  const selectedProject = projectsState.projects.find(
+    (project) => project.id === projectsState.selectedProjectId
+  );
+
+  let content = (
+    <SelectedProject project={selectedProject} onDelete={handleDeleteProject} />
+  );
+  if (projectsState.selectedProjectId === null) {
+    content = (
+      <NewProject onAdd={handleAddProject} onCancel={handleCancelAddProject} />
+    );
+  } else if (projectsState.selectedProjectId === undefined) {
+    content = <NoProjectSelected onStartAddProject={handleStartAddProject} />;
+  }
+
   return (
     <main className="h-screen my-8 flex gap-8">
       <Sidebar
